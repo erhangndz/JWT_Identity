@@ -1,0 +1,6 @@
+@JwtIdentity.API_HostAddress = http://localhost:5027
+
+GET {{JwtIdentity.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
