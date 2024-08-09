@@ -1,8 +1,9 @@
 ﻿using JwtIdentity.API.Models;
 using JwtIdentity.API.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,12 +15,16 @@ namespace JwtIdentity.API.Services.UserServices
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWTSettings _jwtSettings;
+       
+       
 
         public UserService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWTSettings> jwtSettings)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
+         
+           
         }
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
@@ -40,8 +45,8 @@ namespace JwtIdentity.API.Services.UserServices
             }
             .Union(userClaims)
             .Union(roleClaims);
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            var symmetricSecurityKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+            var signingCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(symmetricSecurityKey, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256);
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
@@ -104,7 +109,7 @@ namespace JwtIdentity.API.Services.UserServices
                 authenticationModel = new AuthenticationModel()
                 {
                     IsAuthenticated = false,
-                    Message = $"Incorrect Credentials for user {user.Email}."
+                    Message = $"{user.Email} kullanıcı giriş bilgileri yanlış."
                 };
             }
 
