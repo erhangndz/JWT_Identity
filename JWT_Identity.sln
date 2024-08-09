@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JwtIdentity.API", "JwtIdentity.API\JwtIdentity.API.csproj", "{5BB85E5C-72F1-4DEA-B615-A55B77A6C049}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtIdentity.WebUI", "JwtIdentity.WebUI\JwtIdentity.WebUI.csproj", "{3B4FB2AA-3B31-4EA1-90FF-E304592AF468}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5BB85E5C-72F1-4DEA-B615-A55B77A6C049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BB85E5C-72F1-4DEA-B615-A55B77A6C049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BB85E5C-72F1-4DEA-B615-A55B77A6C049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B4FB2AA-3B31-4EA1-90FF-E304592AF468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B4FB2AA-3B31-4EA1-90FF-E304592AF468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B4FB2AA-3B31-4EA1-90FF-E304592AF468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B4FB2AA-3B31-4EA1-90FF-E304592AF468}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

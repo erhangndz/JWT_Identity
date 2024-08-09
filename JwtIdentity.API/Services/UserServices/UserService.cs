@@ -146,5 +146,13 @@ namespace JwtIdentity.API.Services.UserServices
 
 
         }
+
+        public async Task<JwtSecurityToken> GetAccessToken(AppUser appUser)
+        {
+            var token = await CreateJwtToken(appUser);
+
+
+            return token;
+        }
     }
 }
