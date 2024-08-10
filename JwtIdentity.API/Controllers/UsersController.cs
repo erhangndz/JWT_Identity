@@ -25,8 +25,15 @@ namespace JwtIdentity.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(TokenRequestModel model)
         {
-            var result = await _userService.GetTokenAsync(model);
-            return Ok(result);
+            var succeed =  await _userService.Login(model);
+
+            if (succeed)
+            {
+                return Ok("Kullanıcı Sisteme Giriş başarılı");
+            }
+
+            return BadRequest("Kullanıcı adı veya şifre hatalı");
+           
         }
 
         [HttpPost("createRole")]
@@ -40,13 +47,19 @@ namespace JwtIdentity.API.Controllers
         public async Task<IActionResult> GetToken()
         {
 
-            var userClaim = User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub);
+            
+            var currentUserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserID != null)
+            {
+                var user = await _userManager.FindByIdAsync(currentUserID);
+                var result = await _userService.GetAccessToken(user);
 
-          
-           var user = await _userManager.FindByIdAsync(userClaim.Value);
-            var result = await _userService.GetAccessToken(user);
+                return Ok(result);
+            }
 
-            return Ok(result);
+            return NotFound("Giriş yapan kullanıcı bulunamadı");
+
+            
             
            
         }

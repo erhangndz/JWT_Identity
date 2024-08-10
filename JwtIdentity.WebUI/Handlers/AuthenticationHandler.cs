@@ -3,6 +3,7 @@ using JwtIdentity.WebUI.Models;
 using JwtIdentity.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 
 namespace JwtIdentity.WebUI.Handlers
@@ -20,8 +21,11 @@ namespace JwtIdentity.WebUI.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var accessToken = await _contextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
+
+            var accessToken = await _userService.GetAccessToken();
+
+           
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response =await base.SendAsync(request, cancellationToken);

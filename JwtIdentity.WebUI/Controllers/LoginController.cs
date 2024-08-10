@@ -17,8 +17,16 @@ namespace JwtIdentity.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(LoginDto loginDto)
         {
-            await _userService.Login(loginDto);
-            return RedirectToAction("Index","Home");
+           var succeed =  await _userService.Login(loginDto);
+            if (succeed)
+            {
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı");
+            return View(loginDto);
+           
         }
     }
 }

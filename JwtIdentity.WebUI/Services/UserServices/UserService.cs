@@ -1,4 +1,6 @@
 ﻿using JwtIdentity.WebUI.Models;
+using NuGet.DependencyResolver;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace JwtIdentity.WebUI.Services.UserServices
 {
@@ -12,10 +14,25 @@ namespace JwtIdentity.WebUI.Services.UserServices
             _client = client;
         }
 
-        public async Task<TokenResponse> Login(LoginDto loginDto)
+        public async Task<string> GetAccessToken()
+        {
+          var result =  await _client.GetAsync("users/token");
+          
+              return await result.Content.ReadAsStringAsync();
+          
+           
+        }
+
+        public async Task<bool> Login(LoginDto loginDto)
         {
             var result = await _client.PostAsJsonAsync("users/login",loginDto);
-           return await result.Content.ReadFromJsonAsync<TokenResponse>();
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+            
         }
     }
 }

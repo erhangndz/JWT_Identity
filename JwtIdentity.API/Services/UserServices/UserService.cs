@@ -14,17 +14,17 @@ namespace JwtIdentity.API.Services.UserServices
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly JWTSettings _jwtSettings;
-       
-       
 
-        public UserService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWTSettings> jwtSettings)
+
+
+        public UserService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWTSettings> jwtSettings, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
-         
-           
+            _signInManager = signInManager;
         }
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
@@ -81,40 +81,30 @@ namespace JwtIdentity.API.Services.UserServices
             return $" {user.Email} kullanıcı bilgileri yanlış, tekrar kontrol edin.";
         }
 
-        public async Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model)
+        public async Task<bool> Login(TokenRequestModel model)
         {
-            AuthenticationModel authenticationModel;
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return new AuthenticationModel { IsAuthenticated = false, Message = $"{model.Email} kullanıcısı sistemde kayıtlı değil." };
-
-            if (await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
-
-                authenticationModel = new AuthenticationModel
-                {
-                    IsAuthenticated = true,
-                    Message = jwtSecurityToken.ToString(),
-                    UserName = user.UserName,
-                    Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                    Email = user.Email,
-                };
-                var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-                authenticationModel.Roles = rolesList.ToList();
-                return authenticationModel;
+                return false;
             }
-            else
+          
+               var result =  await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+            if(result.Succeeded)
             {
-                authenticationModel = new AuthenticationModel()
-                {
-                    IsAuthenticated = false,
-                    Message = $"{user.Email} kullanıcı giriş bilgileri yanlış."
-                };
+                return true;
             }
 
+            return false;
+               
+                
+            
+            
 
-            return authenticationModel;
+
+        
         }
 
         public async Task<string> RegisterAsync(CreateUserDto createUserDto)
@@ -147,12 +137,12 @@ namespace JwtIdentity.API.Services.UserServices
 
         }
 
-        public async Task<JwtSecurityToken> GetAccessToken(AppUser appUser)
+        public async Task<string> GetAccessToken(AppUser appUser)
         {
             var token = await CreateJwtToken(appUser);
 
 
-            return token;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

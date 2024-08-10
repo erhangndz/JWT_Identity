@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace JwtIdentity.WebUI.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class HomeController : Controller
     {
        
