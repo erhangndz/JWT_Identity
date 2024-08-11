@@ -90,10 +90,11 @@ namespace JwtIdentity.API.Services.UserServices
                 return false;
             }
           
-               var result =  await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+               var result =  await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
 
             if(result.Succeeded)
             {
+               var token =  await CreateJwtToken(user);
                 return true;
             }
 

@@ -2,9 +2,11 @@
 using JwtIdentity.WebUI.Models;
 using JwtIdentity.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace JwtIdentity.WebUI.Handlers
 {
@@ -21,11 +23,15 @@ namespace JwtIdentity.WebUI.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var token = await _userService.GetAccessToken();
+
+            var accessToken = EncodeNonAsciiCharacters(token);
+
+            
+
+            //var accessToken = await _contextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
 
-            var accessToken = await _userService.GetAccessToken();
-
-           
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response =await base.SendAsync(request, cancellationToken);
@@ -35,6 +41,25 @@ namespace JwtIdentity.WebUI.Handlers
             }
 
             return response;
+        }
+
+        static string EncodeNonAsciiCharacters(string value)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in value)
+            {
+                if (c > 127)
+                {
+                    // This character is too big for ASCII  
+                    string encodedValue = "\\u" + ((int)c).ToString("x4");
+                    sb.Append(encodedValue);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
     }
 }

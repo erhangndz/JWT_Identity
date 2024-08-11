@@ -20,7 +20,6 @@ namespace JwtIdentity.WebUI.Controllers
            var succeed =  await _userService.Login(loginDto);
             if (succeed)
             {
-
                 return RedirectToAction("Index", "Home");
             }
 

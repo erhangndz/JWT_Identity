@@ -4,6 +4,7 @@ using JwtIdentity.WebUI.Services.UserServices;
 using JwtIdentity.WebUI.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -22,47 +23,47 @@ builder.Services.AddCors(opt =>
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
-{
-    var _jwt = builder.Configuration.GetSection(nameof(JWTSettings)).Get<JWTSettings>();
-    o.TokenValidationParameters = new TokenValidationParameters
-    {
-
-        ValidateIssuerSigningKey = true,
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero,
-        ValidIssuer = _jwt.Issuer,
-        ValidAudience = _jwt.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key))
-    };
-}).AddCookie(opt =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddCookie(JwtBearerDefaults.AuthenticationScheme, opt =>
 {
     opt.LoginPath = "/Login/Index";
+    opt.LogoutPath = "/Login/Logout";
+    opt.AccessDeniedPath = "/Pages/AccessDenied";
+    opt.Cookie.SameSite = SameSiteMode.Strict;
+    opt.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    opt.Cookie.Name = "IdentityJwt";
+});
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
+{
+    opt.LoginPath = "/Login/Index";
+    opt.ExpireTimeSpan = TimeSpan.FromDays(5);
+    opt.Cookie.Name = "IdentityCookie";
+    opt.SlidingExpiration = true;
 });
 
 
 
 // Add services to the container.
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<AuthenticationHandler>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(nameof(ApiSettings)));
-builder.Services.AddHttpClient<IUserService, UserService>((sp, client) =>
-{
-    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
 
+builder.Services.AddTransient<AuthenticationHandler>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(nameof(ApiSettings)));
+var settings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>();
+builder.Services.AddHttpClient<IUserService, UserService>(client =>
+{
     client.BaseAddress = new Uri(settings.BaseUrl);
 });
 
-builder.Services.AddHttpClient<IProtectedService, ProtectedService>((sp, client) =>
+builder.Services.AddHttpClient<IProtectedService, ProtectedService>(client =>
 {
-    var settings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
 
     client.BaseAddress = new Uri(settings.BaseUrl);
 }).AddHttpMessageHandler<AuthenticationHandler>();
 builder.Services.AddControllersWithViews();
+    
+
 builder.Services.AddDistributedMemoryCache();
 
 
