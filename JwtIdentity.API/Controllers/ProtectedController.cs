@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JwtIdentity.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles ="User, Moderator")]
     [Route("api/[controller]")]
     [ApiController]
 

@@ -1,5 +1,6 @@
 ﻿using JwtIdentity.API.Models;
 using JwtIdentity.API.Services.UserServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using System.Security.Claims;
 
 namespace JwtIdentity.API.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController(IUserService _userService,UserManager<AppUser> _userManager) : ControllerBase

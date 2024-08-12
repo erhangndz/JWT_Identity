@@ -20,8 +20,12 @@ namespace JwtIdentity.WebUI.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var values = await _protectedService.GetInfo();
-            ViewBag.value = values;
+            var result = await _protectedService.GetInfo();
+            if (result == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            ViewBag.values = result;
             return View();
         }
 

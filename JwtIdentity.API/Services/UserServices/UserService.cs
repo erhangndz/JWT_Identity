@@ -90,7 +90,7 @@ namespace JwtIdentity.API.Services.UserServices
                 return false;
             }
           
-               var result =  await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
+               var result =  await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
             if(result.Succeeded)
             {

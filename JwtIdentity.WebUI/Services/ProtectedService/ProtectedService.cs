@@ -34,26 +34,9 @@ namespace JwtIdentity.WebUI.Services.ProtectedService
                 return content;
             }
 
-           return "Giriş başarısız";
+            return null;
         }
 
-        static string EncodeNonAsciiCharacters(string value)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (char c in value)
-            {
-                if (c > 127)
-                {
-                    // This character is too big for ASCII  
-                    string encodedValue = "\\u" + ((int)c).ToString("x4");
-                    sb.Append(encodedValue);
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            return sb.ToString();
-        }
+        
     }
 }

@@ -25,11 +25,10 @@ namespace JwtIdentity.WebUI.Handlers
         {
             var token = await _userService.GetAccessToken();
 
-            var accessToken = EncodeNonAsciiCharacters(token);
+            var bytes = Encoding.ASCII.GetBytes(token);
 
-            
+            var accessToken = Encoding.ASCII.GetString(bytes);
 
-            //var accessToken = await _contextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -43,23 +42,6 @@ namespace JwtIdentity.WebUI.Handlers
             return response;
         }
 
-        static string EncodeNonAsciiCharacters(string value)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (char c in value)
-            {
-                if (c > 127)
-                {
-                    // This character is too big for ASCII  
-                    string encodedValue = "\\u" + ((int)c).ToString("x4");
-                    sb.Append(encodedValue);
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            return sb.ToString();
-        }
+        
     }
 }
